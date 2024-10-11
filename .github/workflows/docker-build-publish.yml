@@ -8,68 +8,68 @@ permissions:
 
 jobs:
   build:
-     runs-on: ubuntu-latest
-     env:
+    runs-on: ubuntu-latest
+    env:
       OIDC_AUDIENCE: 'jfrog-github'
       OIDC_PROVIDER: 'github'
       PLATFORM_REPO: 'eks-npm-npm'
-     defaults:
+    defaults:
       run:
         working-directory: ./package
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v3
-              
-       - name: Print Specific Environment Variables
-         run: |
-           echo "OIDC_AUDIENCE is set to: ${{ env.OIDC_AUDIENCE }}"
-           echo "OIDC_PROVIDER is set to: ${{ env.OIDC_PROVIDER }}"
-           echo "JFrog URL is set to: ${{ secrets.JF_URL }}" # Caution: This will print the JFrog URL
-       
-       - name: Print All Environment Variables
-         run: printenv
-       
-       - name: Get ID Token
-         id: get_id_token
-         run: |
-           ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-           "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${{ env.OIDC_AUDIENCE }}" | jq .value | tr -d '"')
-           echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-       - name: Debug ID Token
-         run: echo "ID Token: ${{ env.ID_TOKEN }}"
+      - name: Print Specific Environment Variables
+        run: |
+          echo "OIDC_AUDIENCE is set to: ${{ env.OIDC_AUDIENCE }}"
+          echo "OIDC_PROVIDER is set to: ${{ env.OIDC_PROVIDER }}"
+          echo "JFrog URL is set to: ${{ secrets.JF_URL }}" # Caution: This will print the JFrog URL
 
-       - name: Set up QEMU
-         uses: docker/setup-qemu-action@v3
+      - name: Print All Environment Variables
+        run: printenv
 
-       - name: Set up Docker Buildx
-         uses: docker/setup-buildx-action@v3
+      - name: Get ID Token
+        id: get_id_token
+        run: |
+          ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${{ env.OIDC_AUDIENCE }}" | jq .value | tr -d '"')
+          echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
 
-       - name: Set up JFrog CLI with OIDC
-         uses: jfrog/setup-jfrog-cli@v3
-         env:
-           JF_URL: https://elinaf.jfrog.io
-         with:
+      - name: Debug ID Token
+        run: echo "ID Token: ${{ env.ID_TOKEN }}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up JFrog CLI with OIDC
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          JF_URL: https://elinaf.jfrog.io
+        with:
           oidc-provider-name: ${{ env.OIDC_PROVIDER }}
           oidc-audience: ${{ env.OIDC_AUDIENCE }}
 
-       - name: Login to JFrog Artifactory using OIDC
-         run: |
+      - name: Login to JFrog Artifactory using OIDC
+        run: |
           # Login to JFrog using the ID token directly
           echo "${{ secrets.JF_USERNAME }}" | docker login ${{ secrets.JF_URL }} -u ${{ secrets.JF_USERNAME }} --password-stdin
 
-       - name: Build and Push Docker Image to JFrog Artifactory
-         uses: docker/build-push-action@v6
-         with:
+      - name: Build and Push Docker Image to JFrog Artifactory
+        uses: docker/build-push-action@v6
+        with:
           context: .  # Use `.` if Dockerfile is at the root of the repository
           push: true
           tags: elinaf.jfrog.io/test-local-basselm/oceaneeringg/actions-runnerrr-linux:0.1.2-beta.14
 
-       - name: Publish Build Info with JFrog CLI
-         run: |
+      - name: Publish Build Info with JFrog CLI
+        run: |
           # Configure JFrog CLI with username and token
           jf c add my-server --url=${{ secrets.JF_URL }} --interactive=false
-          
+
           # Collect environment variables for the build
           jf rt build-collect-env github-actions-build 1 
 
