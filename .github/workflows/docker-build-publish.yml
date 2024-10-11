@@ -24,7 +24,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Set up JFrog CLI with OIDC
-        uses: jfrog/setup-jfrog-cli@v4
+        uses: jfrog/setup-jfrog-cli@v3
         env:
           JF_URL: https://elinaf.jfrog.io
         with:
