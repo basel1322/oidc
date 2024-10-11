@@ -11,7 +11,7 @@ jobs:
     env:
       OIDC_AUDIENCE: 'jfrog-github'  # Audience for the OIDC token
       OIDC_PROVIDER: 'github'  # OIDC provider name
-      PLATFORM_REPO: 'test-local-basselm'  # Your platform repository
+      PLATFORM_REPO: 'eks-npm-npm'  # Your platform repository
 
     steps:
       - name: Checkout Source Code
