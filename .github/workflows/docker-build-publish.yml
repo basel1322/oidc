@@ -1,4 +1,4 @@
-name: "JFrog-GitHubb NPM Publish OIDC Integration"
+name: "JFrog-GitHubb NPM Publish OIDCdIntegration"
 on: push
 
 permissions:
