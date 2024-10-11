@@ -1,15 +1,13 @@
-name: ci-test
+name: "JFrog-GitHubb NPM Publish OIDC Integration"
+on: push
 
-on:
-  push:
+permissions:
+  id-token: write
 
+  
 jobs:
   docker:
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write  # Grant permission to request the OIDC token
-
     env:
       OIDC_AUDIENCE: 'jfrog-github'  # Audience for the OIDC token
       OIDC_PROVIDER: 'github'  # OIDC provider name
