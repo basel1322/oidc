@@ -38,7 +38,9 @@ jobs:
           echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
 
       - name: Debug ID Token
-        run: echo "ID Token: ${{ env.ID_TOKEN }}"
+        run: |
+          echo "ID Token: ${{ env.ID_TOKEN }}"
+          echo "Debugging complete."
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
