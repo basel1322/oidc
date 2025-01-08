@@ -18,7 +18,7 @@ jobs:
         working-directory: ./package
      steps:
        - name: Checkout
-         uses: actions/checkout@v3
+         uses: actions/checkout@v4
               
        - name: Print Specific Environment Variables
          run: |
@@ -33,30 +33,27 @@ jobs:
          uses: actions/setup-node@v3
    
        - name: Setup JFrog CLI
-         uses: jfrog/setup-jfrog-cli@v4
+         uses: jfrog/setup-jfrog-cli@v3
          env:  
            JF_URL: ${{ secrets.JF_URL }}
          with:
            oidc-provider-name: ${{ env.OIDC_PROVIDER }}
            oidc-audience: ${{ env.OIDC_AUDIENCE }}
 
-       - name: Set CLI Config
-         run:  jf npm-config  --repo-resolve=$PLATFORM_REPO --repo-deploy=$PLATFORM_REPO
-           
-       - name: Install Dependencies
-         run: jf npm install
-           
-       - name: Run tests
-         run: npm test
-         
-       - name: Publish
-         run: jf npm publish
-         
-       - name: Publish Build info With JFrog CLI
+       - name: Test JFrog Connection
          run: |
-          # Collect environment variables for the build
-          jf rt build-collect-env
-          # Collect VCS details from git and add them to the build
-          jf rt build-add-git
-          # Publish build info
-          jf rt build-publish
+            # Enable debug logging
+            export DEBUG=1
+            
+            # Test connection
+            jf rt ping || {
+              echo "Ping failed. Checking configuration:"
+              jf c show
+              exit 1
+            }
+            
+       - name: Test Repository Access
+         if: success()
+         run: |
+            # List repositories to verify access
+            jf rt repos --detailed
