@@ -51,9 +51,3 @@ jobs:
               jf c show
               exit 1
             }
-            
-       - name: Test Repository Access
-         if: success()
-         run: |
-            # List repositories to verify access
-            jf rt repos --detailed
