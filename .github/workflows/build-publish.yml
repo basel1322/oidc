@@ -9,7 +9,7 @@ jobs:
      runs-on: ubuntu-laelinaf
      env:
       OIDC_AUDIENCE: 'Jfrog-github'
-      OIDC_PROVIDER: 'elinaf1322'
+      OIDC_PROVIDER: 'test1322'
       PLATFORM_REPO: 'npm'
      defaults:
       run:
