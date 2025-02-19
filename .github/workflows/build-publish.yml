@@ -36,17 +36,64 @@ jobs:
            oidc-provider-name: ${{ env.OIDC_PROVIDER }}
            oidc-audience: ${{ env.OIDC_AUDIENCE }}
 
-       - name: Test JFrog Connection
+       - name: Create pom.xml
          run: |
-            # Enable debug logging
-            export DEBUG=1
-            
-            # Test connection
-            jf rt ping || {
-              echo "Ping failed. Checking configuration:"
-              jf c show
-              exit 1
-            }
+           cat <<EOF > pom.xml
+           <?xml version="1.0" encoding="UTF-8"?>
+           <project xmlns="http://maven.apache.org/POM/4.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+               <modelVersion>4.0.0</modelVersion>
+
+               <groupId>org.apache.maven</groupId>
+               <artifactId>maven-core</artifactId>
+               <version>3.8.1</version>
+               <packaging>jar</packaging>
+
+               <repositories>
+                   <repository>
+                       <id>artifactory-releases</id>
+                       <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                   </repository>
+               </repositories>
+
+               <distributionManagement>
+                   <repository>
+                       <id>artifactory-releases</id>
+                       <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                   </repository>
+               </distributionManagement>
+
+               <build>
+                   <plugins>
+                       <plugin>
+                           <groupId>org.apache.maven.plugins</groupId>
+                           <artifactId>maven-deploy-plugin</artifactId>
+                           <version>3.0.0-M1</version>
+                           <executions>
+                               <execution>
+                                   <goals>
+                                       <goal>deploy-file</goal>
+                                   </goals>
+                                   <configuration>
+                                       <file>/path/to/maven-core-3.8.1.jar</file>
+                                       <repositoryId>artifactory-releases</repositoryId>
+                                       <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                                       <groupId>org.apache.maven</groupId>
+                                       <artifactId>maven-core</artifactId>
+                                       <version>3.8.1</version>
+                                       <packaging>jar</packaging>
+                                   </configuration>
+                               </execution>
+                           </executions>
+                       </plugin>
+                   </plugins>
+               </build>
+           </project>
+           EOF
+
+       - name: Verify pom.xml Exists
+         run: ls -la && cat pom.xml
 
        - name: Create settings.xml
          run: |
@@ -58,52 +105,17 @@ jobs:
                <server>
                  <username>${{ steps.setup-cli.outputs.oidc-user }}</username>
                  <password>${{ steps.setup-cli.outputs.oidc-token }}</password>
-                 <id>central</id>
-               </server>
-               <server>
-                 <username>${{ steps.setup-cli.outputs.oidc-user }}</username>
-                 <password>${{ steps.setup-cli.outputs.oidc-token }}</password>
-                 <id>snapshots</id>
+                 <id>artifactory-releases</id>
                </server>
              </servers>
              <profiles>
                <profile>
                  <repositories>
                    <repository>
-                     <snapshots>
-                       <enabled>false</enabled>
-                     </snapshots>
-                     <id>central</id>
-                     <name>267471-maven-libs-release</name>
-                     <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local</url>
-                   </repository>
-                   <repository>
-                     <snapshots>
-                       <enabled>true</enabled>
-                     </snapshots>
-                     <id>snapshots</id>
-                     <name>test-basselm-libs-release-local</name>
-                     <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local</url>
+                     <id>artifactory-releases</id>
+                     <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
                    </repository>
                  </repositories>
-                 <pluginRepositories>
-                   <pluginRepository>
-                     <snapshots>
-                       <enabled>false</enabled>
-                     </snapshots>
-                     <id>central</id>
-                     <name>test-basselm-libs-release-local</name>
-                     <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local</url>
-                   </pluginRepository>
-                   <pluginRepository>
-                     <snapshots>
-                       <enabled>true</enabled>
-                     </snapshots>
-                     <id>snapshots</id>
-                     <name>test-basselm-libs-release-local</name>
-                     <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
-                   </pluginRepository>
-                 </pluginRepositories>
                  <id>artifactory</id>
                </profile>
              </profiles>
@@ -114,4 +126,4 @@ jobs:
            EOF
 
        - name: Run Maven Deploy
-         run: mvn clean deploy -e -s settings.xml
+         run: mvn clean deploy -e -s settings.xml -f pom.xml
