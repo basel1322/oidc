@@ -6,10 +6,10 @@ permissions:
 
 jobs:
   build:
-     runs-on: ubuntu-latest
+     runs-on: ubuntu-laelinaf
      env:
       OIDC_AUDIENCE: 'Jfrog-github'
-      OIDC_PROVIDER: 'test1322'
+      OIDC_PROVIDER: 'elinaf1322'
       PLATFORM_REPO: 'npm'
      defaults:
       run:
@@ -53,14 +53,14 @@ jobs:
                <repositories>
                    <repository>
                        <id>artifactory-releases</id>
-                       <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                       <url>https://elinaf.jfrog.io/artifactory/elinaf-basselm-libs-release-local/</url>
                    </repository>
                </repositories>
 
                <distributionManagement>
                    <repository>
                        <id>artifactory-releases</id>
-                       <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                       <url>https://elinaf.jfrog.io/artifactory/elinaf-basselm-libs-release-local/</url>
                    </repository>
                </distributionManagement>
 
@@ -78,7 +78,7 @@ jobs:
                                    <configuration>
                                        <file>/path/to/maven-core-3.8.1.jar</file>
                                        <repositoryId>artifactory-releases</repositoryId>
-                                       <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                                       <url>https://elinaf.jfrog.io/artifactory/elinaf-basselm-libs-release-local/</url>
                                        <groupId>org.apache.maven</groupId>
                                        <artifactId>maven-core</artifactId>
                                        <version>3.8.1</version>
@@ -113,7 +113,7 @@ jobs:
                  <repositories>
                    <repository>
                      <id>artifactory-releases</id>
-                     <url>https://test.jfrog.io/artifactory/test-basselm-libs-release-local/</url>
+                     <url>https://elinaf.jfrog.io/artifactory/elinaf-basselm-libs-release-local/</url>
                    </repository>
                  </repositories>
                  <id>artifactory</id>
