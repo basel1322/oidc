@@ -44,9 +44,7 @@ jobs:
          run: |
             # Enable debug logging
             export DEBUG=1
+            export JFROG_CLI_LOG_LEVEL=DEBUG
             
             # Test connection
-            jf rt ping || 
-              echo "Ping failed. Checking configuration:"
-              jf c show
-              exit 1
+            jf rt ping 
