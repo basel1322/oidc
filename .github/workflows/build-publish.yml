@@ -45,6 +45,7 @@ jobs:
             # Enable debug logging
             export DEBUG=1
             export JFROG_CLI_LOG_LEVEL=DEBUG
+            export bassel=1
             
             # Test connection
             jf rt ping 
