@@ -48,3 +48,4 @@ jobs:
             
             # Test connection
             jf rt ping 
+            jf docker pull bassel-sign1/artifactory-pro:latest
