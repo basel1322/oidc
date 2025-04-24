@@ -47,5 +47,6 @@ jobs:
             export JFROG_CLI_LOG_LEVEL=DEBUG
             
             # Test connection
-            jf rt ping 
-            jf docker pull ${{ secrets.JF_URL }}/bassel-sign1/artifactory-pro:latest
+            jf rt ping
+            jf docker login
+            jf docker pull elianf.jfrog.io/bassel-sign1/artifactory-pro:latest
