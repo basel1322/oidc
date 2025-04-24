@@ -1,8 +1,10 @@
 name: oidc-poc
+
 on:
-    push:
-        branches:
-            - '*'
+  push:
+    branches:
+      - '*'
+
 jobs:
   auth:
     permissions:
@@ -16,16 +18,21 @@ jobs:
           "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github" | jq .value | tr -d '"')
           echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
 
-      - name: Decode ID token payload
-        run: |
-          echo "${{ env.ID_TOKEN }}" | cut -d '.' -f2 | base64 -d | jq .
-          
-      - name: Exchange token with access
+      - name: Exchange token with access and extract values
         env:
           ID_TOKEN: ${{ env.ID_TOKEN }}
           JFROG_PLATFORM_URL: https://elinaf.jfrog.io
         run: |
-          ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322556\"}" | jq .access_token | tr -d '"')
+          response=$(curl -s -XPOST -H "Content-Type: application/json" "$JFROG_PLATFORM_URL/access/api/v1/oidc/token" \
+            -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322556\"}")
+          
+          ACCESS_TOKEN=$(echo $response | jq .access_token | tr -d '"')
+          USERNAME=$(echo $response | jq .username | tr -d '"')
+
           echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
-          echo ${ACCESS_TOKEN}
-          docker login elinaf.jfrog.io -u "basselm" -p ${ACCESS_TOKEN}
+          echo "USERNAME=${USERNAME}" >> $GITHUB_ENV
+
+          echo "Access Token: ${ACCESS_TOKEN}"
+          echo "Username: ${USERNAME}"
+
+          docker login $JFROG_PLATFORM_URL -u "${USERNAME}" -p "${ACCESS_TOKEN}"
