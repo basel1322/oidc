@@ -48,4 +48,4 @@ jobs:
             
             # Test connection
             jf rt ping 
-            jf docker pull elinaf.jfrog.io/bassel-sign1/artifactory-pro:latest
+            jf docker pull ${{ secrets.JF_URL }}/bassel-sign1/artifactory-pro:latest
