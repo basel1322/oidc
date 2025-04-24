@@ -11,7 +11,7 @@ jobs:
      runs-on: ubuntu-latest
      env:
       OIDC_AUDIENCE: 'jfrog-github'
-      OIDC_PROVIDER: 'github-saas'
+      OIDC_PROVIDER: 'test1322556'
       PLATFORM_REPO: 'npm'
      defaults:
       run:
