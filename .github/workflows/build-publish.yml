@@ -24,7 +24,8 @@ jobs:
                 ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322556\"}" | jq .access_token | tr -d '"')
                 echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
                 echo ${ACCESS_TOKEN}
-                curl -XGET -H "Authorization: Bearer $GITHUB_ENV " https://elinaf.jfrog.io/access/api/v1/tokens/me
+                docker login elinaf.jfrog.io -u "jfac@01f82dzjwybb2g09sw6bqn0zjh" -p ${ACCESS_TOKEN}
+
 
 
 
