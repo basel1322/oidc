@@ -1,5 +1,3 @@
-The attribute id-token: write must be included in the GitHub Actions workflows Permission section. Learn more
-
 name: oidc-poc
 on:
     push:
@@ -13,15 +11,15 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Get id token
-                run: |
-                    ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-                    "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github" | jq .value | tr -d '"')
-                    echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
+              run: |
+                ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+                "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github" | jq .value | tr -d '"')
+                echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
+
             - name: Exchange token with access
-                env:
-                    ID_TOKEN: ${{env.ID_TOKEN}}
-                    JFROG_PLATFORM_URL: https://elinaf.jfrog.io
-                run: |
-                    ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322556\"}" | jq .access_token | tr -d '"')
-                    echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
-                    
+              env:
+                  ID_TOKEN: ${{ env.ID_TOKEN }}
+                  JFROG_PLATFORM_URL: https://elinaf.jfrog.io
+              run: |
+                ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" "https://elinaf.jfrog.io/access/api/v1/oidc/token" -d "{\"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \"subject_token_type\":\"urn:ietf:params:oauth:token-type:id_token\", \"subject_token\": \"${ID_TOKEN}\", \"provider_name\": \"test1322556\"}" | jq .access_token | tr -d '"')
+                echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
