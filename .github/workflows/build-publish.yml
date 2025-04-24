@@ -1,4 +1,4 @@
-name: "JFrog-GitHubb NPM Publish OIDC Integration"
+name: "JFrog-GitHubb docker Publish OIDC Integration"
 on: push
 
 # This is required as per
@@ -49,4 +49,4 @@ jobs:
             # Test connection
             jf rt ping
             jf docker login
-            jf docker pull elianf.jfrog.io/bassel-sign1/artifactory-pro:latest
+            jf docker pull elinaf.jfrog.io/bassel-sign1/artifactory-pro:latest
