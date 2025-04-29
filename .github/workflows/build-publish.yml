@@ -13,6 +13,7 @@ jobs:
       OIDC_AUDIENCE: 'jfrog-github'
       OIDC_PROVIDER: 'test1322556'
       PLATFORM_REPO: 'npm'
+      JFROG_CLI_RELEASES_REPO: 'https://elinaf.jfrog.io/artifactory/jfrog-releases'
      defaults:
       run:
         working-directory: ./package
